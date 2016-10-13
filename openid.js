@@ -6,7 +6,6 @@
 
 var openid = require('openid')
 var urljoin = require('url-join')
-var parseurl = require('parseurl')
 
 var loginPath = null
 var loginSuccessCallbacks = []
@@ -70,7 +69,7 @@ var _setup = options => {
       }
       req.session.user = user 
       for (let i in loginSuccessCallbacks) {
-        loginSuccessCallbacks[i]()
+        loginSuccessCallbacks[i](req, res)
       }
       res.redirect(req.session.beforeLoginUrl)
     })
@@ -95,7 +94,7 @@ module.exports = {
       throw new Error('express-openid should configure after session configuration')  
     }
     if (!req.session.user) {
-      req.session.beforeLoginUrl = parseurl.original(req).path
+      req.session.beforeLoginUrl = req.originalUrl || req.url
       res.redirect(loginPath)
     } else {
       next()
