@@ -9,6 +9,7 @@ var urljoin = require('url-join')
 var parseurl = require('parseurl')
 
 var loginPath = null
+var loginSuccessCallbacks = []
 
 var _setup = options => {
   var app = options.app
@@ -68,6 +69,9 @@ var _setup = options => {
         throw new Error('express-openid should configure after session configuration')  
       }
       req.session.user = user 
+      for (let i in loginSuccessCallbacks) {
+        loginSuccessCallbacks[i]()
+      }
       res.redirect(req.session.beforeLoginUrl)
     })
   })
@@ -91,14 +95,29 @@ module.exports = {
       throw new Error('express-openid should configure after session configuration')  
     }
     if (!req.session.user) {
-      req.session.beforeLoginUrl = parseurl.original(req).pathname
+      req.session.beforeLoginUrl = parseurl.original(req).path
       res.redirect(loginPath)
     } else {
       next()
     }
   },
 
-  setup: (options) => {
+  setup: options => {
     return _setup(options)
+  },
+
+  onLoginSuccess: cb => {
+    loginSuccessCallbacks.push(cb)
+  },
+
+  removeLoginSuccessListener: l => {
+    if (l) {
+      let index = loginSuccessCallbacks.indexOf(l)
+      if (index >= 0) {
+        loginSuccessCallbacks.splice(index, 1)
+      }
+    } else {
+      loginSuccessCallbacks = []
+    }
   },
 }
