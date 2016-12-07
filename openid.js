@@ -71,7 +71,7 @@ var _setup = options => {
       for (let i in loginSuccessCallbacks) {
         loginSuccessCallbacks[i](req, res)
       }
-      res.redirect(req.session.beforeLoginUrl)
+      res.redirect(req.session.beforeLoginUrl || '/')
     })
   })
   
@@ -79,7 +79,7 @@ var _setup = options => {
     if (!req.session) {
       throw new Error('express-openid should configure after session configuration')  
     }
-    if (req.session && req.session.user) {
+    if (req.session.user) {
       delete req.session.user
     }
     res.redirect('/')

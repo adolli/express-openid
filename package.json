@@ -1,6 +1,6 @@
 {
   "name": "express-openid",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "the most easily configure express-openid login module. compact with express-session and cookie-session and es5",
   "main": "openid.js",
   "scripts": {
